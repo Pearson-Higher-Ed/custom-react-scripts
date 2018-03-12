@@ -34,7 +34,6 @@ const publicUrl = '';
 const env = getClientEnvironment(publicUrl);
 //Get custom configuration for injecting plugins, presets and loaders
 const customConfig = getCustomConfig(true);
-var poststylus = require('poststylus');
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.
 // The production configuration is different and lives in a separate file.
@@ -194,7 +193,23 @@ module.exports = {
           // Process JS with Babel.
           {
             test: /\.(js|jsx)$/,
-            exclude: path.join(__dirname, '/node_modules/@pearson-incubator/'),
+            exclude: /node_modules/,
+            loader: require.resolve('babel-loader'),
+            options: {
+              babelrc: false,
+              presets: [require.resolve('babel-preset-react-app')].concat(
+                customConfig.babelPresets
+              ),
+              plugins: customConfig.babelPlugins,
+              // This is a feature of `babel-loader` for webpack (not Babel itself).
+              // It enables caching results in ./node_modules/.cache/babel-loader/
+              // directory for faster rebuilds.
+              cacheDirectory: true,
+            },
+          },
+          {
+            test: /\.(js|jsx)$/,
+            include: /node_modules(\\|\/)@pearson-incubator(\\|\/)(?!assessment-client|tdx-components)/,
             loader: require.resolve('babel-loader'),
             options: {
               babelrc: false,

@@ -35,9 +35,8 @@ const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 const publicUrl = publicPath.slice(0, -1);
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
-//Get custom configuration for injecting plugins, presets and loaders
+// Get custom configuration for injecting plugins, presets and loaders
 const customConfig = getCustomConfig(false);
-var poststylus = require('poststylus');
 // Assert this just to be safe.
 // Development builds of React are slow and not intended for production.
 if (env.stringified['process.env'].NODE_ENV !== '"production"') {
@@ -171,9 +170,7 @@ module.exports = {
                 },
               },
             ]
-           
            },
-          
           {
             test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png(\?.*)?$/],
             loader: require.resolve('url-loader'),
@@ -185,7 +182,20 @@ module.exports = {
           // Process JS with Babel.
           {
             test: /\.(js|jsx)$/,
-            exclude: path.join(__dirname, '/node_modules/@pearson-incubator/'),
+            exclude: /node_modules/,
+            loader: require.resolve('babel-loader'),
+            options: {
+              babelrc: false,
+              presets: [require.resolve('babel-preset-react-app')].concat(
+                customConfig.babelPresets
+              ),
+              plugins: customConfig.babelPlugins,
+              compact: true,
+            },
+          },
+          {
+            test: /\.(js|jsx)$/,
+            include: /node_modules(\\|\/)@pearson-incubator(\\|\/)(?!assessment-client|tdx-components)/,
             loader: require.resolve('babel-loader'),
             options: {
               babelrc: false,
