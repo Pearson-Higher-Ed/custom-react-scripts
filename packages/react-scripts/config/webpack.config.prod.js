@@ -54,7 +54,7 @@ module.exports = {
   bail: true,
   // We generate sourcemaps in production. This is slow but gives good results.
   // You can exclude the *.map files from the build during deployment.
-  devtool: shouldUseSourceMap ? 'source-map' : false,
+  devtool: false,
   // In production, we only want to load the polyfills and the app code.
   entry: [require.resolve('./polyfills'), paths.appIndexJs],
   output: {
@@ -179,6 +179,14 @@ module.exports = {
               name: 'static/media/[name].[hash:8].[ext]',
             },
           },
+          { 
+            test: /\.(svg|woff2|eot)$/,
+             loader: require.resolve('url-loader'),
+            options: {
+              limit: 10000,
+              mimetype: 'image/svg+xml',
+            },
+           },
           // Process JS with Babel.
           {
             test: /\.(js|jsx)$/,
@@ -272,7 +280,8 @@ module.exports = {
         // Turned on because emoji and regex is not minified properly using default
         // https://github.com/facebookincubator/create-react-app/issues/2488
         ascii_only: true,
-      }
+      },
+      sourceMap: false,
     }),
     // Note: this won't work without ExtractTextPlugin.extract(..) in `loaders`.
     new ExtractTextPlugin({
